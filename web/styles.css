@@ -1,0 +1,413 @@
+:root {
+  color-scheme: dark;
+  --bg: #11110f;
+  --panel: #191a18;
+  --panel-2: #20221f;
+  --line: #353932;
+  --text: #f2efe7;
+  --muted: #aaa493;
+  --accent: #ff6a2a;
+  --accent-2: #67d492;
+  --danger: #e45757;
+  --shadow: 0 22px 70px rgba(0, 0, 0, 0.38);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  background:
+    linear-gradient(rgba(17, 17, 15, 0.92), rgba(17, 17, 15, 0.96)),
+    url("../docs/reference/back-wiring.jpg") center / cover fixed;
+  color: var(--text);
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  min-height: 42px;
+  padding: 0 14px;
+  background: var(--panel-2);
+  color: var(--text);
+  cursor: pointer;
+}
+
+button:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+
+input[type="text"],
+input:not([type]) {
+  width: 100%;
+}
+
+.app-shell {
+  min-height: 100vh;
+  padding: 24px;
+}
+
+.workspace {
+  width: min(1040px, 100%);
+  margin: 0 auto;
+  display: grid;
+  gap: 16px;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.topbar-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.topbar-buttons {
+  display: inline-grid;
+  grid-template-columns: repeat(3, auto);
+  gap: 10px;
+}
+
+.topbar-buttons button {
+  min-height: 40px;
+}
+
+.eyebrow {
+  margin: 0 0 4px;
+  color: var(--accent-2);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(34px, 8vw, 74px);
+  line-height: 0.9;
+  letter-spacing: 0;
+}
+
+.connection {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: rgba(25, 26, 24, 0.9);
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--danger);
+}
+
+.connection.connected .dot {
+  background: var(--accent-2);
+}
+
+.connection.connected {
+  color: var(--text);
+}
+
+.preview-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 180px;
+  gap: 16px;
+  align-items: stretch;
+}
+
+.matrix-preview {
+  width: 100%;
+  aspect-ratio: 4 / 1;
+  display: block;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #050505;
+  box-shadow: var(--shadow);
+}
+
+.panel-photo {
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--panel);
+}
+
+.panel-photo img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.controls,
+.terminal {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(25, 26, 24, 0.94);
+  box-shadow: var(--shadow);
+}
+
+.controls {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  padding: 16px;
+}
+
+.field {
+  display: grid;
+  gap: 8px;
+}
+
+.field.full,
+.control-group.full,
+.button-row.full,
+.preset-strip.full,
+.effect-strip.full {
+  grid-column: 1 / -1;
+}
+
+.control-group {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px;
+  background: rgba(32, 34, 31, 0.72);
+  display: grid;
+  gap: 12px;
+}
+
+.group-title {
+  margin: 0;
+  color: var(--accent-2);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+label,
+.terminal-head {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+label span {
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.send-row,
+.button-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+}
+
+.send-row input {
+  min-width: 0;
+  height: 46px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #0e0f0d;
+  color: var(--text);
+  padding: 0 12px;
+  text-transform: uppercase;
+}
+
+.send-row button,
+#connectButton {
+  background: var(--accent);
+  color: #1b0d05;
+  border-color: var(--accent);
+  font-weight: 800;
+}
+
+input[type="range"] {
+  width: 100%;
+  accent-color: var(--accent);
+}
+
+input[type="color"] {
+  width: 100%;
+  height: 46px;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #0e0f0d;
+  cursor: pointer;
+}
+
+input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+input[type="color"]::-webkit-color-swatch {
+  border: 0;
+  border-radius: 4px;
+}
+
+input[type="color"]::-moz-color-swatch {
+  border: 0;
+  border-radius: 4px;
+}
+
+.preset-strip,
+.effect-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(112px, 1fr));
+  gap: 10px;
+}
+
+.text-color-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 130px 130px;
+  gap: 10px;
+  align-items: end;
+}
+
+.inline-color-picker {
+  display: grid;
+  gap: 8px;
+}
+
+.inline-color-picker input[type="color"] {
+  width: 100%;
+}
+
+.preset-strip button,
+.effect-strip button {
+  min-height: 46px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.effect-strip button.active {
+  border-color: var(--accent-2);
+  color: var(--accent-2);
+  box-shadow: inset 0 0 0 1px var(--accent-2);
+}
+
+.terminal {
+  min-height: 152px;
+  overflow: hidden;
+}
+
+.terminal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 42px;
+  padding: 0 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.terminal-head button {
+  min-height: 30px;
+  padding: 0 10px;
+}
+
+#logList {
+  height: 150px;
+  margin: 0;
+  padding: 12px;
+  overflow: auto;
+  list-style: none;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+#logList li + li {
+  margin-top: 6px;
+}
+
+#logList .rx {
+  color: var(--accent-2);
+}
+
+#logList .tx {
+  color: var(--accent);
+}
+
+#logList .error {
+  color: var(--danger);
+}
+
+@media (max-width: 760px) {
+  .app-shell {
+    padding: 16px;
+  }
+
+  .topbar,
+  .preview-row {
+    grid-template-columns: 1fr;
+  }
+
+  .topbar {
+    display: grid;
+  }
+
+  .topbar-actions {
+    display: grid;
+    gap: 10px;
+  }
+
+  .topbar-buttons {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .preview-row {
+    display: grid;
+  }
+
+  .panel-photo {
+    display: none;
+  }
+
+  .controls {
+    grid-template-columns: 1fr;
+  }
+
+  .preset-strip,
+  .effect-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .text-color-layout {
+    grid-template-columns: 1fr;
+  }
+}
