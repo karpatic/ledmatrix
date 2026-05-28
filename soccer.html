@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Soccer Billboard | LED Matrix BLE</title>
+    <link rel="stylesheet" href="web/styles.css">
+  </head>
+  <body class="soccer-page">
+    <main class="app-shell">
+      <section class="workspace" aria-labelledby="app-title">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">ESP32 BLE</p>
+            <h1 id="app-title">Soccer</h1>
+          </div>
+          <div class="topbar-actions">
+            <div class="connection">
+              <span id="connectionDot" class="dot" aria-hidden="true"></span>
+            </div>
+            <div class="topbar-buttons">
+              <button
+                id="logToggleButton"
+                class="icon-button"
+                type="button"
+                aria-controls="logPanel"
+                aria-expanded="false"
+                title="Toggle log"
+              >&#9881;</button>
+              <a class="nav-link" href="index.html">Main</a>
+              <button id="connectButton" type="button">Link</button>
+              <button id="disconnectButton" type="button" disabled>Off</button>
+              <button id="statusButton" type="button" disabled>Stat</button>
+            </div>
+          </div>
+        </header>
+
+        <div class="preview-row soccer-preview-row">
+          <canvas id="matrixPreview" class="matrix-preview" width="640" height="160"></canvas>
+        </div>
+
+        <section class="controls soccer-controls" aria-label="Soccer billboard controls">
+          <div class="field compact-field">
+            <label for="brightnessInput">Brightness <span id="brightnessValue">8</span></label>
+            <input id="brightnessInput" type="range" min="1" max="128" value="8">
+          </div>
+
+          <div class="field compact-field">
+            <label for="speedInput">Speed <span id="speedValue">45 ms</span></label>
+            <input id="speedInput" type="range" min="20" max="160" value="45">
+          </div>
+
+          <section class="control-group full" aria-label="Soccer team setup controls">
+            <section class="soccer-scoreboard" aria-label="Scoreboard">
+              <div class="soccer-scoreboard-head">
+                <h2 class="soccer-scoreboard-title">Score</h2>
+                <button id="sendScoreboardButton" type="button">Send Score</button>
+              </div>
+              <div class="soccer-score-controls">
+                <div class="field">
+                  <label for="teamAScore">Team A</label>
+                  <div class="score-stepper">
+                    <button id="teamAScoreDown" type="button" aria-label="Decrease Team A score">-</button>
+                    <input id="teamAScore" type="number" min="0" max="99" value="0">
+                    <button id="teamAScoreUp" type="button" aria-label="Increase Team A score">+</button>
+                  </div>
+                </div>
+                <div class="field">
+                  <label for="teamBScore">Team B</label>
+                  <div class="score-stepper">
+                    <button id="teamBScoreDown" type="button" aria-label="Decrease Team B score">-</button>
+                    <input id="teamBScore" type="number" min="0" max="99" value="0">
+                    <button id="teamBScoreUp" type="button" aria-label="Increase Team B score">+</button>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <div class="soccer-grid">
+              <div class="field">
+                <label for="teamAColor">Team A Color</label>
+                <input id="teamAColor" type="color" value="#ff7a00">
+              </div>
+              <div class="field">
+                <label for="teamBColor">Team B Color</label>
+                <input id="teamBColor" type="color" value="#ffe100">
+              </div>
+            </div>
+          </section>
+
+          <section class="control-group full soccer-message-panel" aria-label="Text controls">
+            <div class="field full">
+              <label for="messageInput">Message</label>
+              <div class="send-row">
+                <input id="messageInput" maxlength="80" value="0-0" autocomplete="off">
+                <button id="sendMessageButton" type="button">Send</button>
+              </div>
+            </div>
+
+            <div class="soccer-text-tools">
+              <div class="field">
+                <label>Motion</label>
+                <div class="effect-strip motion-strip full" aria-label="Text movement effects">
+                  <button type="button" data-motion="CENTER" aria-pressed="true">Center</button>
+                  <button type="button" data-motion="BOUNCE" aria-pressed="false">Bounce</button>
+                  <button type="button" data-motion="FLASH" aria-pressed="false">Flash</button>
+                </div>
+              </div>
+              <div class="field">
+                <label>Effect</label>
+                <div class="effect-strip full" aria-label="Text color effects">
+                  <button type="button" data-text-colorfx="STATIC" aria-pressed="true">Static</button>
+                  <button type="button" data-text-colorfx="RAINBOW_STATIC" aria-pressed="false">Rainbow</button>
+                </div>
+              </div>
+              <div class="field">
+                <label for="randomizeButton">Auto</label>
+                <button
+                  id="randomizeButton"
+                  class="soccer-randomize-button"
+                  type="button"
+                  aria-pressed="false"
+                >Randomize</button>
+              </div>
+              <div class="inline-color-picker">
+                <label for="textColorInput">Text</label>
+                <input id="textColorInput" type="color" value="#ff7a00">
+              </div>
+              <div class="inline-color-picker">
+                <label for="bgColorInput">BG</label>
+                <input id="bgColorInput" type="color" value="#000000">
+              </div>
+            </div>
+
+          </section>
+
+        </section>
+
+        <section id="logPanel" class="terminal collapsed" aria-label="Bluetooth log">
+          <div class="terminal-head">
+            <span>Log</span>
+            <button id="clearLogButton" type="button">Clear</button>
+          </div>
+          <ol id="logList"></ol>
+        </section>
+      </section>
+    </main>
+
+    <script src="web/app.js" defer></script>
+    <script src="web/soccer.js" defer></script>
+  </body>
+</html>

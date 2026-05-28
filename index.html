@@ -17,9 +17,17 @@
           <div class="topbar-actions">
             <div class="connection">
               <span id="connectionDot" class="dot" aria-hidden="true"></span>
-              <span id="connectionLabel">Disconnected</span>
             </div>
             <div class="topbar-buttons">
+              <button
+                id="logToggleButton"
+                class="icon-button"
+                type="button"
+                aria-controls="logPanel"
+                aria-expanded="false"
+                title="Toggle log"
+              >&#9881;</button>
+              <a class="nav-link" href="soccer.html">Soccer Billboard</a>
               <button id="connectButton" type="button">Connect</button>
               <button id="disconnectButton" type="button" disabled>Disconnect</button>
               <button id="statusButton" type="button" disabled>Status</button>
@@ -29,9 +37,6 @@
 
         <div class="preview-row">
           <canvas id="matrixPreview" class="matrix-preview" width="640" height="160"></canvas>
-          <figure class="panel-photo">
-            <img src="docs/reference/front-panel.jpg" alt="8 by 32 RGB LED matrix panel">
-          </figure>
         </div>
 
         <section class="controls" aria-label="Matrix controls">
@@ -71,8 +76,7 @@
               <div class="text-color-layout">
                 <div class="effect-strip full" aria-label="Text color effects">
                   <button type="button" data-text-colorfx="STATIC" aria-pressed="true">Static</button>
-                  <button type="button" data-text-colorfx="RAINBOW_STATIC" aria-pressed="false">Rainbow Static</button>
-                  <button type="button" data-text-colorfx="RAINBOW_CYCLE" aria-pressed="false">Rainbow Cycle</button>
+                  <button type="button" data-text-colorfx="RAINBOW_STATIC" aria-pressed="false">Rainbow</button>
                 </div>
                 <div class="inline-color-picker">
                   <label for="textColorInput">Text color</label>
@@ -107,15 +111,12 @@
             <div class="effect-strip full" aria-label="Visual effects">
               <button type="button" data-effect="TEXT" aria-pressed="true">Text</button>
               <button type="button" data-effect="RAINBOW" aria-pressed="false">Rainbow</button>
-              <button type="button" data-effect="SCANNER" aria-pressed="false">Scanner</button>
-              <button type="button" data-effect="SPARKLE" aria-pressed="false">Sparkle</button>
-              <button type="button" data-effect="COMET" aria-pressed="false">Comet</button>
               <button type="button" data-effect="BLANK" aria-pressed="false">Blank</button>
             </div>
           </section>
         </section>
 
-        <section class="terminal" aria-label="Bluetooth log">
+        <section id="logPanel" class="terminal collapsed" aria-label="Bluetooth log">
           <div class="terminal-head">
             <span>Log</span>
             <button id="clearLogButton" type="button">Clear</button>

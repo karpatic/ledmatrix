@@ -12,17 +12,10 @@ const MAX_SPEED = 160;
 const VISUAL_MODES = new Set([
   "TEXT",
   "RAINBOW",
-  "SCANNER",
-  "SPARKLE",
-  "COMET",
   "BLANK",
 ]);
 const TEXT_MOVEMENTS = new Set(["SCROLL", "FLASH", "CENTER", "BOUNCE"]);
-const TEXT_COLOR_FX = new Set([
-  "STATIC",
-  "RAINBOW_STATIC",
-  "RAINBOW_CYCLE",
-]);
+const TEXT_COLOR_FX = new Set(["STATIC", "RAINBOW_STATIC"]);
 const TEXT_MOVEMENT_SPEED_DEFAULTS = {
   SCROLL: DEFAULT_SPEED,
   FLASH: DEFAULT_SPEED,
@@ -35,6 +28,7 @@ const FLASH_CHARS_PER_PAGE = 5;
 const FLASH_FRAMES_ON = 8;
 const FLASH_FRAMES_OFF = 8;
 const STORAGE_KEY = "led-matrix-settings-v1";
+const FORCE_TEXT_MODE = /(?:^|\/)soccer\.html$/i.test(window.location.pathname || "");
 
 const font = {
   " ": [0x00, 0x00, 0x00, 0x00, 0x00],
@@ -89,6 +83,8 @@ const disconnectButton = document.querySelector("#disconnectButton");
 const statusButton = document.querySelector("#statusButton");
 const sendMessageButton = document.querySelector("#sendMessageButton");
 const clearLogButton = document.querySelector("#clearLogButton");
+const logToggleButton = document.querySelector("#logToggleButton");
+const logPanel = document.querySelector("#logPanel");
 const messageInput = document.querySelector("#messageInput");
 const brightnessInput = document.querySelector("#brightnessInput");
 const speedInput = document.querySelector("#speedInput");
@@ -121,6 +117,7 @@ let textMovementSpeeds = {
 };
 let hasStoredSettings = false;
 let lastColorSendMs = 0;
+let commandWriteChain = Promise.resolve();
 
 function setConnectionState(state) {
   connectionState = state;
@@ -129,14 +126,16 @@ function setConnectionState(state) {
   const reconnecting = state === "reconnecting";
 
   connection.classList.toggle("connected", connected);
-  connectionLabel.textContent =
-    state === "connected"
-      ? "Connected"
-      : state === "connecting"
-        ? "Connecting"
-      : state === "reconnecting"
-        ? "Reconnecting"
-        : "Disconnected";
+  if (connectionLabel) {
+    connectionLabel.textContent =
+      state === "connected"
+        ? "Connected"
+        : state === "connecting"
+          ? "Connecting"
+          : state === "reconnecting"
+            ? "Reconnecting"
+            : "Disconnected";
+  }
   connectButton.disabled =
     connected || connecting || reconnecting || !navigator.bluetooth;
   disconnectButton.disabled = !connected && !reconnecting;
@@ -166,6 +165,10 @@ function normalizeColor(value, fallback = DEFAULT_BG_COLOR) {
 }
 
 function normalizeVisualMode(value) {
+  if (FORCE_TEXT_MODE) {
+    return "TEXT";
+  }
+
   const mode = String(value || "TEXT").toUpperCase();
   return VISUAL_MODES.has(mode) ? mode : "TEXT";
 }
@@ -183,13 +186,8 @@ function normalizeTextColorFx(value) {
   if (fx === "RAINBOW" || fx === "RAINBOW_TEXT" || fx === "RAINBOW_STATIC") {
     return "RAINBOW_STATIC";
   }
-  if (
-    fx === "RAINBOW_LOOP" ||
-    fx === "RAINBOW_GLOW" ||
-    fx === "RAINBOW_CYCLE" ||
-    fx === "RAINBOW_GLOW_AURA"
-  ) {
-    return "RAINBOW_CYCLE";
+  if (fx === "RAINBOW_LOOP" || fx === "RAINBOW_GLOW" || fx === "RAINBOW_CYCLE" || fx === "RAINBOW_GLOW_AURA") {
+    return "RAINBOW_STATIC";
   }
   return TEXT_COLOR_FX.has(fx) ? fx : "STATIC";
 }
@@ -360,7 +358,7 @@ function queueCommand(command) {
   return true;
 }
 
-async function writeCommand(command, allowQueue = true) {
+async function writeCommandNow(command, allowQueue = true) {
   if (!isConnected()) {
     if (allowQueue) {
       queueCommand(command);
@@ -383,6 +381,15 @@ async function writeCommand(command, allowQueue = true) {
     }
     return false;
   }
+}
+
+function writeCommand(command, allowQueue = true) {
+  const queuedWrite = commandWriteChain.then(
+    () => writeCommandNow(command, allowQueue),
+    () => writeCommandNow(command, allowQueue),
+  );
+  commandWriteChain = queuedWrite.catch(() => {});
+  return queuedWrite;
 }
 
 function clearReconnectTimer() {
@@ -795,23 +802,15 @@ function drawStyledText(text, startX, frame, scale, solidColor) {
     return;
   }
 
-  if (currentTextColorFx === "RAINBOW_STATIC") {
-    drawTextAtWithColorFn(text, startX, scale, (x, y) => {
-      const hue = (x * 14 + y * 28) % 360;
-      return `hsl(${hue} 100% 56%)`;
-    });
-    return;
-  }
-
   drawTextAtWithColorFn(
     text,
     startX,
     scale,
     (x, y) => {
-      const hue = (frame * 8 + x * 14 + y * 24) % 360;
+      const hue = (x * 14 + y * 28) % 360;
       return `hsl(${hue} 100% 56%)`;
     },
-    (x) => 0.9 + (Math.sin((frame + x * 1.8) * 0.16) + 1) * 0.18,
+    () => 0.88,
   );
 }
 
@@ -977,6 +976,13 @@ function bindEvents() {
   clearLogButton.addEventListener("click", () => {
     logList.textContent = "";
   });
+
+  if (logToggleButton && logPanel) {
+    logToggleButton.addEventListener("click", () => {
+      const collapsed = logPanel.classList.toggle("collapsed");
+      logToggleButton.setAttribute("aria-expanded", collapsed ? "false" : "true");
+    });
+  }
 
   sendMessageButton.addEventListener("click", () => {
     const message = normalizeMessage(messageInput.value);
