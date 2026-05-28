@@ -1,3 +1,5 @@
+const RANDOMIZE_INTERVAL_MS = 45000;
+
 function setInputValue(input, value) {
   input.value = value;
   input.dispatchEvent(new Event("input", { bubbles: true }));
@@ -45,6 +47,9 @@ function initSoccerPage() {
   const bgColorInput = document.querySelector("#bgColorInput");
   const centerMotionButton = document.querySelector('[data-motion="CENTER"]');
   const bounceMotionButton = document.querySelector('[data-motion="BOUNCE"]');
+  const randomizeButton = document.querySelector("#randomizeButton");
+  const motionButtons = Array.from(document.querySelectorAll("[data-motion]"));
+  const colorFxButtons = Array.from(document.querySelectorAll("[data-text-colorfx]"));
   const staticColorFxButton = document.querySelector('[data-text-colorfx="STATIC"]');
   const rainbowColorFxButton = document.querySelector('[data-text-colorfx="RAINBOW_STATIC"]');
 
@@ -64,6 +69,9 @@ function initSoccerPage() {
     !bgColorInput ||
     !centerMotionButton ||
     !bounceMotionButton ||
+    !randomizeButton ||
+    motionButtons.length === 0 ||
+    colorFxButtons.length === 0 ||
     !staticColorFxButton ||
     !rainbowColorFxButton
   ) {
@@ -72,6 +80,44 @@ function initSoccerPage() {
 
   let scoreAnimationInFlight = false;
   let pendingScoreTeam = "A";
+  let randomizeTimer = null;
+
+  function pickDifferentButton(buttons) {
+    if (buttons.length <= 1) {
+      return buttons[0] || null;
+    }
+
+    const currentIndex = buttons.findIndex(
+      (button) => button.getAttribute("aria-pressed") === "true",
+    );
+    let nextIndex = currentIndex;
+    while (nextIndex === currentIndex) {
+      nextIndex = Math.floor(Math.random() * buttons.length);
+    }
+    return buttons[nextIndex];
+  }
+
+  function randomizeMotionAndEffect() {
+    pickDifferentButton(motionButtons)?.click();
+    pickDifferentButton(colorFxButtons)?.click();
+  }
+
+  function setRandomizeActive(active) {
+    if (randomizeTimer) {
+      clearInterval(randomizeTimer);
+      randomizeTimer = null;
+    }
+
+    randomizeButton.classList.toggle("active", active);
+    randomizeButton.setAttribute("aria-pressed", active ? "true" : "false");
+
+    if (!active) {
+      return;
+    }
+
+    randomizeMotionAndEffect();
+    randomizeTimer = setInterval(randomizeMotionAndEffect, RANDOMIZE_INTERVAL_MS);
+  }
 
   function setMovementForMessage(message) {
     if (prefersBounce(message)) {
@@ -191,6 +237,10 @@ function initSoccerPage() {
 
   sendScoreboardButton.addEventListener("click", () => {
     setScoreboardAsDefault(true);
+  });
+
+  randomizeButton.addEventListener("click", () => {
+    setRandomizeActive(!randomizeTimer);
   });
 
   refreshScoreboardDisplay();
