@@ -98,7 +98,12 @@ function initSoccerPage() {
   }
 
   function randomizeMotionAndEffect() {
-    pickDifferentButton(motionButtons)?.click();
+    const motionButton = pickDifferentButton(motionButtons);
+    if (motionButton) {
+      motionButton.dataset.preserveSpeed = "true";
+      motionButton.click();
+      delete motionButton.dataset.preserveSpeed;
+    }
     pickDifferentButton(colorFxButtons)?.click();
   }
 

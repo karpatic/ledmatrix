@@ -6,7 +6,7 @@ const RECONNECT_DELAY_MS = 2000;
 
 const MATRIX_WIDTH = 32;
 const MATRIX_HEIGHT = 8;
-const DEFAULT_SPEED = 45;
+const DEFAULT_SPEED = 160;
 const MIN_SPEED = 20;
 const MAX_SPEED = 160;
 const VISUAL_MODES = new Set([
@@ -1085,14 +1085,24 @@ function bindEvents() {
   motionButtons.forEach((button) => {
     button.addEventListener("click", () => {
       const movement = normalizeTextMovement(button.dataset.motion);
+      const preserveSpeed = button.dataset.preserveSpeed === "true";
+      const previousSpeed = speedInput.value;
       setCurrentVisualMode("TEXT");
       setCurrentTextMovement(movement);
-      syncSpeedInputWithTextMovement(movement);
+      if (preserveSpeed) {
+        setTextMovementSpeed(movement, previousSpeed);
+        speedInput.value = previousSpeed;
+        refreshControlLabels();
+      } else {
+        syncSpeedInputWithTextMovement(movement);
+      }
       previewStart = performance.now();
       saveSettingsToStorage();
       writeCommand("MODE=TEXT");
       writeCommand(`TMOVE=${movement}`);
-      writeCommand(`SPEED=${getTextMovementSpeed(movement)}`);
+      if (!preserveSpeed) {
+        writeCommand(`SPEED=${getTextMovementSpeed(movement)}`);
+      }
     });
   });
 
